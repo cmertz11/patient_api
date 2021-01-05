@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  persondb:
+    image: mcr.microsoft.com/mssql/server
+    
+  person_api:
+    image: ${DOCKER_REGISTRY-}patientapi
+    build:
+      context: .
+      dockerfile: patient_api/Dockerfile
