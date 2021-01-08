@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using patient_api.Data;
 using patient_api.Data.dto;
 using patient_api.Data.Models;
 using patient_api.Repositories;
@@ -15,10 +16,12 @@ namespace patient_api.Controllers
     public class PatientController : ControllerBase
     {
         private readonly IPatientRepository _repository;
+        private readonly ILogger _logger;
 
-        public PatientController(IPatientRepository repository)
+        public PatientController(IPatientRepository repository, ILogger<PatientController> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -32,7 +35,7 @@ namespace patient_api.Controllers
             }
             catch (Exception ex)
             {
-                //log
+                _logger.LogError(ex.Message);
                 return StatusCode(500);
             }
         }
@@ -49,7 +52,7 @@ namespace patient_api.Controllers
             }
             catch (Exception ex)
             {
-                //log
+                _logger.LogError(ex.Message);
                 return StatusCode(500);
             }
         }
@@ -58,15 +61,31 @@ namespace patient_api.Controllers
         [ActionName("GetPatient")]
         public async Task<ActionResult<String>> GetPatient(string Id)
         {
+            if (string.IsNullOrEmpty(Id)) return StatusCode(442);
             try
             {
+                
                 var Patient = await _repository.GetPatient(Id);
                 return Ok(Patient);
-
             }
             catch (Exception ex)
             {
-                //log
+                _logger.LogError(ex.Message);
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet]
+        [ActionName("GetPatients")]
+        public async Task<IActionResult> GetPatients([FromQuery]PaginationQuery paginationQuery)
+        { 
+            try
+            { 
+                return Ok(await _repository.GetPatients(paginationQuery));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
                 return StatusCode(500);
             }
         }
@@ -83,7 +102,7 @@ namespace patient_api.Controllers
             }
             catch (Exception ex)
             {
-                //log
+                _logger.LogError(ex.Message);
                 return StatusCode(500);
             }
         }

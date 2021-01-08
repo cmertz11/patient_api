@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  persondb:
+  patient_db:
     image: mcr.microsoft.com/mssql/server
     
   person_api:

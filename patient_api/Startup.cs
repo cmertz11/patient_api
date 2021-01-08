@@ -1,7 +1,9 @@
+using AutoMapper;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using patient_api.Data;
 using patient_api.HealthChecks;
 using patient_api.Repositories;
+using patient_api.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,8 +35,18 @@ namespace patient_api
         {
             var connectionString = Configuration.GetSection("ConnectionStrings")["PatientConnectionString"];
             services.AddDbContext<PatientContext>(options => options.UseSqlServer(connectionString));
-
+            services.AddAutoMapper(typeof(Startup));
             services.AddTransient<IPatientRepository, PatientRepository>();
+
+            services.AddHttpContextAccessor();
+
+            //services.AddSingleton<IUriService>(o =>
+            //{
+            //    var accessor = o.GetRequiredService<IHttpContextAccessor>();
+            //    var request = accessor.HttpContext.Request;
+            //    var uri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent());
+            //    return new UriService(uri);
+            //});
 
             services.AddCors(options =>
             {
@@ -52,11 +65,11 @@ namespace patient_api
 
             services.AddSwaggerGen();
 
-            services.AddHealthChecks().AddCheck<DbHealthCheckProvider>($"SQL Server: Patientdb");
+            services.AddHealthChecks().AddCheck<DbHealthCheckProvider>($"SQL Server: Patient_db");
 
             services.AddHealthChecksUI(opt =>
             {
-                opt.AddHealthCheckEndpoint("Patient API", "http://host.docker.internal:55010/api/health"); //map health check api
+                opt.AddHealthCheckEndpoint("Patient API", Configuration.GetSection("healthcheck")["endpoint"]); //map health check api
             })
             .AddInMemoryStorage();
 

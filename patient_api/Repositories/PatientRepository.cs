@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using patient_api.Data;
 using patient_api.Data.dto;
@@ -13,27 +15,27 @@ namespace patient_api.Repositories
     public class PatientRepository : IPatientRepository
     {
         private PatientContext _context;
-        public PatientRepository(PatientContext context)
+        private readonly IMapper _mapper;
+        private readonly ILogger<PatientRepository> _logger;
+
+        public PatientRepository(PatientContext context, IMapper mapper, ILogger<PatientRepository> logger)
         {
-            _context = context;
+            _context = context; _mapper = mapper; _logger = logger;
         }
 
         public async Task<string> AddPatient(Patient_dto Patient_dto)
         {
             try
             {
-                Patient Patient = new Patient
-                {         
-                    PersonId = Guid.Parse(Patient_dto.PersonId),
-                    MedicalRecordNumber = Patient_dto.MedicalRecordNumber
-                };
-
-                _context.Patients.Add(Patient);
+                Patient_dto.Id = null;
+                Patient newPatient = _mapper.Map<Patient>(Patient_dto);
+                _context.Patients.Add(newPatient);
                 await _context.SaveChangesAsync();
-                return Patient.Id.ToString();
+                return newPatient.Id.ToString();
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
@@ -43,15 +45,13 @@ namespace patient_api.Repositories
             {
                 var Patient = await _context.Patients.FindAsync(Guid.Parse(Patient_dto.Id));
 
-                Patient.PersonId = Guid.Parse(Patient_dto.PersonId);
-                Patient.MedicalRecordNumber = Patient_dto.MedicalRecordNumber;
-
+                Patient = _mapper.Map<Patient>(Patient_dto);
                 var dbresponse = await _context.SaveChangesAsync();
                 return dbresponse == 1;
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex.Message);
                 throw;
             }
 
@@ -63,21 +63,16 @@ namespace patient_api.Repositories
                 var Patient = await _context.Patients.FindAsync(Guid.Parse(Id));
                 if (Patient != null)
                 {
-                    return new Patient_dto
-                    {
-                        Id = Patient.Id.ToString(),
-                        PersonId = Patient.PersonId.ToString(),
-                        MedicalRecordNumber = Patient.MedicalRecordNumber
-                    };
+                    return _mapper.Map<Patient_dto>(Patient);
                 } 
                 else
-                {
+                { 
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                //log
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
@@ -92,10 +87,27 @@ namespace patient_api.Repositories
             }
             catch (Exception ex)
             {
-                //log
+                _logger.LogError(ex.Message);
                 throw;
             }
         }
 
+        public async Task<PagedResponse<Patient_dto>> GetPatients(PaginationQuery paginationQuery = null)
+        {
+            try
+            {
+                if (paginationQuery == null) 
+                    return new PagedResponse<Patient_dto>(_mapper.Map<List<Patient_dto>>(await _context.Patients.ToListAsync()));
+                
+
+                var skip = (paginationQuery.PageNumber - 1) * paginationQuery.PageSize;
+                return new PagedResponse<Patient_dto>(_mapper.Map<List<Patient_dto>>(await _context.Patients.Skip(skip).Take(paginationQuery.PageSize).ToListAsync()));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
     }
 }

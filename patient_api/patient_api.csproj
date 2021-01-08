@@ -17,6 +17,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="5.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="5.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.1">
@@ -30,6 +31,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
+    <Folder Include="Data\Pagination\" />
   </ItemGroup>
 
 </Project>

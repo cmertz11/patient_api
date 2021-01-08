@@ -2,17 +2,21 @@ version: '3.4'
 
 services:
 
-  persondb:
-    container_name: patientdb 
+  patient_db:
+    container_name: patient_db
     ports:
     - "1434:1433"
     environment:
         SA_PASSWORD: "SwN12345678"
         ACCEPT_EULA: "Y"
+
   person_api:
     container_name: patient_api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "ConnectionStrings__PatientConnectionString=Server=patientdb;Database=patientDb;User Id=sa;Password=SwN12345678"
+      - "ConnectionStrings__PatientConnectionString=Server=patient_db;Database=patient_db;User Id=sa;Password=SwN12345678"
+      - "healthcheck__endpoint=http://host.docker.internal:8002/api/health"
     ports:
-      - "80"
+      - "8002:80"
+    depends_on:
+      - patient_db
