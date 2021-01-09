@@ -15,7 +15,9 @@ namespace patient_api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            modelBuilder.Entity<Patient>()
+            .Property(b => b.Created)
+            .HasDefaultValueSql("getdate()");
 
         }
     }

@@ -115,17 +115,17 @@ namespace patient_api.Repositories
         {
             try
             {
-                 var testData = new Faker<Patient>() 
+                 var testPatientData = new Faker<Patient>() 
                     .RuleFor(c => c.MedicalRecordNumber, f => f.Finance.RoutingNumber().ToString())
                     .RuleFor(c => c.FirstName, f => f.Name.FirstName())
                     .RuleFor(c => c.LastName, f => f.Name.LastName())
-                    .RuleFor(c => c.MI, f => f.Random.String(1,1))
+                    .RuleFor(c => c.MI, f => f.Name.FindName().Substring(0, 1))
                     .RuleFor(c => c.DOB, f => f.Person.DateOfBirth)
                     .RuleFor(c => c.email, f => f.Person.Email)
                     .RuleFor(c => c.Sex, f => f.Random.Number(1, 2))
                     .RuleFor(c => c.Race, f => f.Random.Number(1, 6));
 
-                  var testRecords = testData.GenerateBetween(10, 10);
+                  var testRecords = testPatientData.GenerateBetween(1000, 1000);
 
                   foreach (var item in testRecords)
                   {

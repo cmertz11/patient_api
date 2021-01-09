@@ -6,6 +6,7 @@ using patient_api.Data;
 using patient_api.Data.dto;
 using patient_api.Data.Models;
 using patient_api.Repositories;
+using patient_api.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +20,10 @@ namespace patient_api.Controllers
     {
         private readonly IPatientRepository _repository;
         private readonly ILogger _logger;
-
-        public PatientController(IPatientRepository repository, ILogger<PatientController> logger)
+        private readonly IUriService _uriService;
+        public PatientController(IPatientRepository repository, ILogger<PatientController> logger, IUriService uriService)
         {
-            _repository = repository;
-            _logger = logger;
+            _repository = repository; _logger = logger; _uriService = uriService;
         }
 
         [HttpPost]
