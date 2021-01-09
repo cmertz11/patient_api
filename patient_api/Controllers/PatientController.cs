@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bogus;
+using Bogus.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using patient_api.Data;
 using patient_api.Data.dto;
@@ -89,9 +91,25 @@ namespace patient_api.Controllers
                 return StatusCode(500);
             }
         }
+        [HttpGet]
+        [ActionName("SeedTestPatients")]
+        public async Task<IActionResult> SeedTestPatients()
+        {
+            try
+            {
+                await _repository.SeedPatientData();
 
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500);
+            }
+        }
 
-        [HttpDelete]
+ 
+[HttpDelete]
         [ActionName("DeletePatient")]
         public async Task<ActionResult<String>> DeletePatient(string Id)
         {

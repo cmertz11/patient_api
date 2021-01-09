@@ -17,5 +17,7 @@ namespace patient_api.Repositories
 
         Task<Patient_dto> GetPatient(string Id);
         Task<PagedResponse<Patient_dto>> GetPatients(PaginationQuery paginationQuery = null);
+
+        Task<bool> SeedPatientData();
     }
 }

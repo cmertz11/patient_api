@@ -1,5 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Bogus;
+using Bogus.Extensions;
+using Microsoft.EntityFrameworkCore;
 using patient_api.Data.Models;
+using System;
 
 namespace patient_api.Data
 {
@@ -12,6 +15,8 @@ namespace patient_api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+
         }
     }
 }
