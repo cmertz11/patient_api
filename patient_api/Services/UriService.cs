@@ -14,17 +14,22 @@ namespace patient_api.Services
         {
             _baseUri = baseUri;
         }
-        public Uri GetPageUri(PaginationQuery filter, string route)
-        {
-            var _enpointUri = new Uri(string.Concat(_baseUri, route));
-            var modifiedUri = QueryHelpers.AddQueryString(_enpointUri.ToString(), "pageNumber", filter.PageNumber.ToString());
-            modifiedUri = QueryHelpers.AddQueryString(modifiedUri, "pageSize", filter.PageSize.ToString());
-            return new Uri(modifiedUri);
-        }
-
         public Uri GetPatientUri(string PatientId)
         {
             return new Uri(_baseUri + $"/api/patient/GetPatient?Id={PatientId}");
+        }
+        
+        public Uri GetPatientsUri(PaginationQuery pagination)
+        {
+            var uri = new Uri(_baseUri + $"/api/patient/GetPatients");
+            if (pagination == null)
+            {
+                return uri;
+            }
+
+            var modifiedUri = QueryHelpers.AddQueryString(uri.ToString(), "pageNumber", pagination.PageNumber.ToString());
+            modifiedUri = QueryHelpers.AddQueryString(modifiedUri, "pageSize", pagination.PageSize.ToString());
+            return new Uri(modifiedUri);
         }
     }
 }

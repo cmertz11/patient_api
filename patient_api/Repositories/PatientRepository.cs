@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Bogus;
 using Bogus.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using patient_api.Data;
 using patient_api.Data.dto;
 using patient_api.Data.Models;
+using patient_api.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +18,14 @@ namespace patient_api.Repositories
 {
     public class PatientRepository : IPatientRepository
     {
-        private PatientContext _context;
+        private readonly PatientContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<PatientRepository> _logger;
+        private readonly IUriService _uriService;
 
-        public PatientRepository(PatientContext context, IMapper mapper, ILogger<PatientRepository> logger)
+        public PatientRepository(PatientContext context, IMapper mapper, ILogger<PatientRepository> logger, IUriService uriService)
         {
-            _context = context; _mapper = mapper; _logger = logger;
+            _context = context; _mapper = mapper; _logger = logger; _uriService = uriService;
         }
 
         public async Task<string> AddPatient(Patient_dto Patient_dto)
@@ -33,7 +36,7 @@ namespace patient_api.Repositories
                 Patient newPatient = _mapper.Map<Patient>(Patient_dto);
                 _context.Patients.Add(newPatient);
                 await _context.SaveChangesAsync();
-                return newPatient.Id.ToString();
+                return _uriService.GetPatientUri(newPatient.Id.ToString()).ToString();
             }
             catch (Exception ex)
             {
@@ -46,7 +49,6 @@ namespace patient_api.Repositories
             try
             {
                 var Patient = await _context.Patients.FindAsync(Guid.Parse(Patient_dto.Id));
-
                 Patient = _mapper.Map<Patient>(Patient_dto);
                 var dbresponse = await _context.SaveChangesAsync();
                 return dbresponse == 1;
@@ -93,17 +95,23 @@ namespace patient_api.Repositories
                 throw;
             }
         }
-
-        public async Task<PagedResponse<Patient_dto>> GetPatients(PaginationQuery paginationQuery = null)
+        public async Task<PagedResponse<Patient_dto>> GetPatients(PaginationQuery paging = null)
         {
             try
             {
-                if (paginationQuery == null) 
+                if (paging == null) 
                     return new PagedResponse<Patient_dto>(_mapper.Map<List<Patient_dto>>(await _context.Patients.ToListAsync()));
                 
 
-                var skip = (paginationQuery.PageNumber - 1) * paginationQuery.PageSize;
-                return new PagedResponse<Patient_dto>(_mapper.Map<List<Patient_dto>>(await _context.Patients.Skip(skip).Take(paginationQuery.PageSize).ToListAsync()));
+                var skip = (paging.PageNumber - 1) * paging.PageSize;
+                var patientRespone = new PagedResponse<Patient_dto>(_mapper.Map<List<Patient_dto>>(await _context.Patients.Skip(skip).Take(paging.PageSize).ToListAsync()));
+
+                patientRespone.PageNumber = paging.PageNumber >= 1 ? paging.PageNumber : (int?)null;
+                patientRespone.PageSize = paging.PageSize >= 1 ? paging.PageSize : (int?)null;
+                patientRespone.NextPage = paging.PageNumber >= 1 ? _uriService.GetPatientsUri(new PaginationQuery(paging.PageNumber + 1, paging.PageSize)).ToString() : null;
+                patientRespone.PreviousPage = paging.PageNumber - 1 >= 1 ? _uriService.GetPatientsUri(new PaginationQuery(paging.PageNumber - 1, paging.PageSize)).ToString() : null;
+
+                return patientRespone;
             }
             catch (Exception ex)
             {

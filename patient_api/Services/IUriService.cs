@@ -10,6 +10,6 @@ namespace patient_api.Services
     public interface IUriService
     {
         Uri GetPatientUri(string PatientId);
-        Uri GetPageUri(PaginationQuery filter, string route);
+        Uri GetPatientsUri(PaginationQuery filter);
     }
 }

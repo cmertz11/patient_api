@@ -20,10 +20,9 @@ namespace patient_api.Controllers
     {
         private readonly IPatientRepository _repository;
         private readonly ILogger _logger;
-        private readonly IUriService _uriService;
-        public PatientController(IPatientRepository repository, ILogger<PatientController> logger, IUriService uriService)
+        public PatientController(IPatientRepository repository, ILogger<PatientController> logger)
         {
-            _repository = repository; _logger = logger; _uriService = uriService;
+            _repository = repository; _logger = logger;
         }
 
         [HttpPost]
@@ -48,9 +47,11 @@ namespace patient_api.Controllers
         {
             try
             {
-                await _repository.UpdatePatient(Patient);
-                return Ok();
+                var success = await _repository.UpdatePatient(Patient);
+               
+                if(success) return Ok();
 
+                return NotFound();
             }
             catch (Exception ex)
             {
@@ -66,8 +67,11 @@ namespace patient_api.Controllers
             if (string.IsNullOrEmpty(Id)) return StatusCode(442);
             try
             {
-                
                 var Patient = await _repository.GetPatient(Id);
+                if(Patient == null)
+                {
+                    return NotFound();
+                }
                 return Ok(Patient);
             }
             catch (Exception ex)
@@ -79,11 +83,13 @@ namespace patient_api.Controllers
 
         [HttpGet]
         [ActionName("GetPatients")]
-        public async Task<IActionResult> GetPatients([FromQuery]PaginationQuery paginationQuery)
+        public async Task<IActionResult> GetPatients([FromQuery]PaginationQuery paging)
         { 
             try
-            { 
-                return Ok(await _repository.GetPatients(paginationQuery));
+            {
+                var patients = await _repository.GetPatients(paging);
+
+                return Ok(patients);
             }
             catch (Exception ex)
             {
@@ -91,6 +97,28 @@ namespace patient_api.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpDelete]
+        [ActionName("DeletePatient")]
+        public async Task<ActionResult<String>> DeletePatient(string Id)
+        {
+            try
+            {
+                var success = await _repository.DeletePatient(Id);
+
+                if (success)
+                {
+                    return Ok();
+                }
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500);
+            }
+        } 
+        
         [HttpGet]
         [ActionName("SeedTestPatients")]
         public async Task<IActionResult> SeedTestPatients()
@@ -108,21 +136,6 @@ namespace patient_api.Controllers
             }
         }
 
- 
-[HttpDelete]
-        [ActionName("DeletePatient")]
-        public async Task<ActionResult<String>> DeletePatient(string Id)
-        {
-            try
-            {
-                await _repository.DeletePatient(Id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500);
-            }
-        }
+
     }
 }
