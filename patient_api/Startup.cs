@@ -4,20 +4,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using patient_api.Data;
 using patient_api.HealthChecks;
-using patient_api.Repositories;
 using patient_api.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace patient_api
 {
@@ -36,7 +29,7 @@ namespace patient_api
             var connectionString = Configuration.GetSection("ConnectionStrings")["PatientConnectionString"];
             services.AddDbContext<PatientContext>(options => options.UseSqlServer(connectionString));
             services.AddAutoMapper(typeof(Startup));
-            services.AddTransient<IPatientRepository, PatientRepository>();
+            services.AddTransient<IPatientService, PatientService>();
 
             services.AddHttpContextAccessor();
 

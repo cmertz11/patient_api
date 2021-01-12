@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace patient_api.Repositories
+namespace patient_api.Services
 {
-    public interface IPatientRepository
+    public interface IPatientService
     {
         Task<string> AddPatient(Patient_dto Patient);
 

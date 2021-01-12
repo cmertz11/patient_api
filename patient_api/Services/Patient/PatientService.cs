@@ -14,16 +14,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace patient_api.Repositories
+namespace patient_api.Services
 {
-    public class PatientRepository : IPatientRepository
+    public class PatientService : IPatientService
     {
         private readonly PatientContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger<PatientRepository> _logger;
+        private readonly ILogger<PatientService> _logger;
         private readonly IUriService _uriService;
 
-        public PatientRepository(PatientContext context, IMapper mapper, ILogger<PatientRepository> logger, IUriService uriService)
+        public PatientService(PatientContext context, IMapper mapper, ILogger<PatientService> logger, IUriService uriService)
         {
             _context = context; _mapper = mapper; _logger = logger; _uriService = uriService;
         }

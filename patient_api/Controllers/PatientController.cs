@@ -1,15 +1,8 @@
-﻿using Bogus;
-using Bogus.Extensions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using patient_api.Data;
 using patient_api.Data.dto;
-using patient_api.Data.Models;
-using patient_api.Repositories;
 using patient_api.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace patient_api.Controllers
@@ -18,9 +11,9 @@ namespace patient_api.Controllers
     [Route("api/[controller]/[action]")]
     public class PatientController : ControllerBase
     {
-        private readonly IPatientRepository _repository;
+        private readonly IPatientService _repository;
         private readonly ILogger _logger;
-        public PatientController(IPatientRepository repository, ILogger<PatientController> logger)
+        public PatientController(IPatientService repository, ILogger<PatientController> logger)
         {
             _repository = repository; _logger = logger;
         }
