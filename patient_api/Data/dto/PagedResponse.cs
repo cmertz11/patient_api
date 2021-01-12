@@ -16,6 +16,10 @@ namespace patient_api.Data.dto
 
         public IEnumerable<T> Data { get; set; }
 
+        public int? TotalRecords { get; set; } = 0;
+
+        public int? TotalPages { get; set; } = 0;
+
         public int? PageNumber { get; set; }
 
         public int? PageSize { get; set; }

@@ -4,13 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace patient_api.Data.Models
 {
-    public class Patient
+    public partial class Patient
     {        
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public Guid Id { get; set; }
- 
-        public string MedicalRecordNumber { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "First Name too long (100 character limit).")]
@@ -36,4 +34,5 @@ namespace patient_api.Data.Models
 
         public DateTime LastUpdate { get; set; }
     }
+
 }

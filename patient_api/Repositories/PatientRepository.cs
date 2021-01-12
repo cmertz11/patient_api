@@ -95,23 +95,30 @@ namespace patient_api.Repositories
                 throw;
             }
         }
-        public async Task<PagedResponse<Patient_dto>> GetPatients(PaginationQuery paging = null)
+        public async Task<PagedResponse<Patient_dto>> GetPatients(PaginationQuery paging)
         {
             try
             {
-                if (paging == null) 
-                    return new PagedResponse<Patient_dto>(_mapper.Map<List<Patient_dto>>(await _context.Patients.ToListAsync()));
+                List<Patient> patients = new List<Patient>();
+                PagedResponse<Patient_dto> patientResponse = new PagedResponse<Patient_dto>();
+                patientResponse.TotalRecords = _context.Patients.Count();
+                patientResponse.TotalPages = (int)Math.Ceiling((decimal)patientResponse.TotalRecords / (decimal)paging.PageSize);
+                patientResponse.PageNumber = paging.PageNumber >= 1 ? paging.PageNumber : (int?)null;
+                patientResponse.PageSize = paging.PageSize >= 1 ? paging.PageSize : (int?)null;
                 
+                if (patientResponse.TotalRecords > 0)
+                {
+                    var skip = (paging.PageNumber - 1) * paging.PageSize;
+                    patients = await _context.Patients.Skip(skip).Take(paging.PageSize).ToListAsync();
 
-                var skip = (paging.PageNumber - 1) * paging.PageSize;
-                var patientRespone = new PagedResponse<Patient_dto>(_mapper.Map<List<Patient_dto>>(await _context.Patients.Skip(skip).Take(paging.PageSize).ToListAsync()));
-
-                patientRespone.PageNumber = paging.PageNumber >= 1 ? paging.PageNumber : (int?)null;
-                patientRespone.PageSize = paging.PageSize >= 1 ? paging.PageSize : (int?)null;
-                patientRespone.NextPage = paging.PageNumber >= 1 ? _uriService.GetPatientsUri(new PaginationQuery(paging.PageNumber + 1, paging.PageSize)).ToString() : null;
-                patientRespone.PreviousPage = paging.PageNumber - 1 >= 1 ? _uriService.GetPatientsUri(new PaginationQuery(paging.PageNumber - 1, paging.PageSize)).ToString() : null;
-
-                return patientRespone;
+                    patientResponse.Data = _mapper.Map<List<Patient_dto>>(patients);
+                    patientResponse.PreviousPage = paging.PageNumber - 1 >= 1 ? _uriService.GetPatientsUri(new PaginationQuery(paging.PageNumber - 1, paging.PageSize)).ToString() : null;
+                    if (patientResponse.PageNumber < patientResponse.TotalPages)
+                    {
+                        patientResponse.NextPage = paging.PageNumber >= 1 ? _uriService.GetPatientsUri(new PaginationQuery(paging.PageNumber + 1, paging.PageSize)).ToString() : null;
+                    }
+                }
+                return patientResponse;
             }
             catch (Exception ex)
             {

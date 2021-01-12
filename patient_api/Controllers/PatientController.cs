@@ -89,7 +89,7 @@ namespace patient_api.Controllers
             {
                 var patients = await _repository.GetPatients(paging);
 
-                return Ok(patients);
+                return patients != null ? Ok(patients) : NotFound();
             }
             catch (Exception ex)
             {
