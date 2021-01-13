@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
 using Bogus;
 using Bogus.Extensions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using patient_api.Data;
 using patient_api.Data.dto;
 using patient_api.Data.Models;
-using patient_api.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,12 +92,12 @@ namespace patient_api.Services
                 throw;
             }
         }
-        public async Task<PagedResponse<Patient_dto>> GetPatients(PaginationQuery paging)
+        public async Task<PatientPagedResponse> GetPatients(PaginationQuery paging)
         {
             try
             {
                 List<Patient> patients = new List<Patient>();
-                PagedResponse<Patient_dto> patientResponse = new PagedResponse<Patient_dto>();
+                PatientPagedResponse patientResponse = new PatientPagedResponse();
                 patientResponse.TotalRecords = _context.Patients.Count();
                 patientResponse.TotalPages = (int)Math.Ceiling((decimal)patientResponse.TotalRecords / (decimal)paging.PageSize);
                 patientResponse.PageNumber = paging.PageNumber >= 1 ? paging.PageNumber : (int?)null;

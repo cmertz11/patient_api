@@ -16,7 +16,7 @@ namespace patient_api.Services
         Task<bool> DeletePatient(string Id);
 
         Task<Patient_dto> GetPatient(string Id);
-        Task<PagedResponse<Patient_dto>> GetPatients(PaginationQuery paginationQuery = null);
+        Task<PatientPagedResponse> GetPatients(PaginationQuery paginationQuery = null);
 
         Task<bool> SeedPatientData();
     }

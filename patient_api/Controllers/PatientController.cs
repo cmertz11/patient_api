@@ -55,7 +55,7 @@ namespace patient_api.Controllers
 
         [HttpGet]
         [ActionName("GetPatient")]
-        public async Task<ActionResult<String>> GetPatient(string Id)
+        public async Task<ActionResult<Patient_dto>> GetPatient(string Id)
         {
             if (string.IsNullOrEmpty(Id)) return StatusCode(442);
             try
@@ -76,7 +76,7 @@ namespace patient_api.Controllers
 
         [HttpGet]
         [ActionName("GetPatients")]
-        public async Task<IActionResult> GetPatients([FromQuery]PaginationQuery paging)
+        public async Task<ActionResult<PatientPagedResponse>> GetPatients([FromQuery]PaginationQuery paging)
         { 
             try
             {

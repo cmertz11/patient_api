@@ -5,16 +5,11 @@ using System.Threading.Tasks;
 
 namespace patient_api.Data.dto
 {
-    public class PagedResponse<T>
+    public class PatientPagedResponse
     {
-        public PagedResponse() { }
-
-        public PagedResponse(IEnumerable<T> data)
-        {
-            Data = data;
-        }
-
-        public IEnumerable<T> Data { get; set; }
+        public PatientPagedResponse() { }
+ 
+        public IEnumerable<Patient_dto> Data { get; set; }
 
         public int? TotalRecords { get; set; } = 0;
 
