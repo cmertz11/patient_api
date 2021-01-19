@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using patient_api.Data.dto;
 using patient_api.Services;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace patient_api.Controllers
@@ -11,11 +15,12 @@ namespace patient_api.Controllers
     [Route("api/[controller]/[action]")]
     public class PatientController : ControllerBase
     {
-        private readonly IPatientService _repository;
+        private readonly IPatientService _pateintService;
         private readonly ILogger _logger;
-        public PatientController(IPatientService repository, ILogger<PatientController> logger)
+        private readonly IWebHostEnvironment _env;
+        public PatientController(IPatientService repository, ILogger<PatientController> logger, IWebHostEnvironment env)
         {
-            _repository = repository; _logger = logger;
+            _pateintService = repository; _logger = logger; _env = env;
         }
 
         [HttpPost]
@@ -24,7 +29,7 @@ namespace patient_api.Controllers
         {
             try
             {
-                var Id = await _repository.AddPatient(Patient);
+                var Id = await _pateintService.AddPatient(Patient);
                 return Ok(Id);
             }
             catch (Exception ex)
@@ -40,7 +45,7 @@ namespace patient_api.Controllers
         {
             try
             {
-                var success = await _repository.UpdatePatient(Patient);
+                var success = await _pateintService.UpdatePatient(Patient);
                
                 if(success) return Ok();
 
@@ -60,7 +65,7 @@ namespace patient_api.Controllers
             if (string.IsNullOrEmpty(Id)) return StatusCode(442);
             try
             {
-                var Patient = await _repository.GetPatient(Id);
+                var Patient = await _pateintService.GetPatient(Id);
                 if(Patient == null)
                 {
                     return NotFound();
@@ -80,7 +85,7 @@ namespace patient_api.Controllers
         { 
             try
             {
-                var patients = await _repository.GetPatients(paging);
+                var patients = await _pateintService.GetPatients(paging);
 
                 return patients != null ? Ok(patients) : NotFound();
             }
@@ -97,7 +102,7 @@ namespace patient_api.Controllers
         {
             try
             {
-                var success = await _repository.DeletePatient(Id);
+                var success = await _pateintService.DeletePatient(Id);
 
                 if (success)
                 {
@@ -110,15 +115,16 @@ namespace patient_api.Controllers
                 _logger.LogError(ex.Message);
                 return StatusCode(500);
             }
-        } 
-        
+        }
+
+      
         [HttpGet]
         [ActionName("SeedTestPatients")]
         public async Task<IActionResult> SeedTestPatients()
         {
             try
             {
-                await _repository.SeedPatientData();
+                await _pateintService.SeedPatientData();
 
                 return Ok();
             }
@@ -130,5 +136,5 @@ namespace patient_api.Controllers
         }
 
 
-    }
+    }     
 }

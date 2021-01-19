@@ -9,6 +9,8 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "patient_api", "patient_api\patient_api.csproj", "{E3C78C74-0273-473C-A70F-667D3FB8EB60}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTests", "..\XUnitTests\XUnitTests.csproj", "{CE0ACE60-E403-41DA-B80E-C41B0726845F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{E3C78C74-0273-473C-A70F-667D3FB8EB60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3C78C74-0273-473C-A70F-667D3FB8EB60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3C78C74-0273-473C-A70F-667D3FB8EB60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE0ACE60-E403-41DA-B80E-C41B0726845F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE0ACE60-E403-41DA-B80E-C41B0726845F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE0ACE60-E403-41DA-B80E-C41B0726845F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE0ACE60-E403-41DA-B80E-C41B0726845F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

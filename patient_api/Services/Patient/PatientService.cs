@@ -155,5 +155,41 @@ namespace patient_api.Services
             }
         }
 
+        public async Task<string> AddPatientAddress(Address_dto address)
+        {
+            try
+            {
+                address.Id = null;
+                Address newPatientAddress = _mapper.Map<Address>(Address_dto);
+                _context.PatientAddresss.Add(newPatientAddress);
+                await _context.SaveChangesAsync();
+                return _uriService.GetPatientUri(newPatient.Id.ToString()).ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdatePatientAddress(Address_dto address)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> DeletePatientAddress(string Id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Patient_dto> GetPatientAddress(string Id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<AddressPagedResponse> GetPatientAddresses(PaginationQuery paginationQuery = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

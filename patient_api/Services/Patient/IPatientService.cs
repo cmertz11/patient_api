@@ -16,7 +16,18 @@ namespace patient_api.Services
         Task<bool> DeletePatient(string Id);
 
         Task<Patient_dto> GetPatient(string Id);
+        
         Task<PatientPagedResponse> GetPatients(PaginationQuery paginationQuery = null);
+
+        Task<string> AddPatientAddress(Address_dto address);
+
+        Task<bool> UpdatePatientAddress(Address_dto address);
+
+        Task<bool> DeletePatientAddress(string Id);
+
+        Task<Patient_dto> GetPatientAddress(string Id);
+
+        Task<AddressPagedResponse> GetPatientAddresses(PaginationQuery paginationQuery = null);
 
         Task<bool> SeedPatientData();
     }

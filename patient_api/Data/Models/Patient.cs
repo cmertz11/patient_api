@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -6,9 +7,6 @@ namespace patient_api.Data.Models
 {
     public partial class Patient
     {        
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
-        public Guid Id { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "First Name too long (100 character limit).")]
@@ -29,10 +27,7 @@ namespace patient_api.Data.Models
 
         public int Race { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime Created { get; set; }
-
-        public DateTime LastUpdate { get; set; }
+        public List<Address> Addresses { get; set; } = new List<Address>();
     }
 
 }
