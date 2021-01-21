@@ -19,9 +19,27 @@ namespace patient_api.Services
             return new Uri(_baseUri + $"/api/patient/GetPatient?Id={PatientId}");
         }
         
-        public Uri GetPatientsUri(PaginationQuery pagination)
+        public Uri GetPatientsPagedUri(PaginationQuery pagination)
         {
             var uri = new Uri(_baseUri + $"/api/patient/GetPatients");
+            if (pagination == null)
+            {
+                return uri;
+            }
+
+            var modifiedUri = QueryHelpers.AddQueryString(uri.ToString(), "pageNumber", pagination.PageNumber.ToString());
+            modifiedUri = QueryHelpers.AddQueryString(modifiedUri, "pageSize", pagination.PageSize.ToString());
+            return new Uri(modifiedUri);
+        }
+
+        public Uri GetPatientAddressUri(string AddressId)
+        {
+            return new Uri(_baseUri + $"/api/address/GetAddress?Id={AddressId}");
+        }
+
+        public Uri GetPatientAddressPagedUri(string PatientId, PaginationQuery pagination)
+        {
+            var uri = new Uri(_baseUri + $"/api/address/GetPatientAddresses?PatientId={PatientId}");
             if (pagination == null)
             {
                 return uri;

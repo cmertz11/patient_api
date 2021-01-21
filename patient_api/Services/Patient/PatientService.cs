@@ -109,10 +109,10 @@ namespace patient_api.Services
                     patients = await _context.Patients.Skip(skip).Take(paging.PageSize).ToListAsync();
 
                     patientResponse.Data = _mapper.Map<List<Patient_dto>>(patients);
-                    patientResponse.PreviousPage = paging.PageNumber - 1 >= 1 ? _uriService.GetPatientsUri(new PaginationQuery(paging.PageNumber - 1, paging.PageSize)).ToString() : null;
+                    patientResponse.PreviousPage = paging.PageNumber - 1 >= 1 ? _uriService.GetPatientsPagedUri(new PaginationQuery(paging.PageNumber - 1, paging.PageSize)).ToString() : null;
                     if (patientResponse.PageNumber < patientResponse.TotalPages)
                     {
-                        patientResponse.NextPage = paging.PageNumber >= 1 ? _uriService.GetPatientsUri(new PaginationQuery(paging.PageNumber + 1, paging.PageSize)).ToString() : null;
+                        patientResponse.NextPage = paging.PageNumber >= 1 ? _uriService.GetPatientsPagedUri(new PaginationQuery(paging.PageNumber + 1, paging.PageSize)).ToString() : null;
                     }
                 }
                 return patientResponse;
@@ -160,10 +160,11 @@ namespace patient_api.Services
             try
             {
                 address.Id = null;
-                Address newPatientAddress = _mapper.Map<Address>(Address_dto);
+                Address newPatientAddress = _mapper.Map<Address>(address);
+                newPatientAddress.LastUpdate = DateTime.Now;
                 _context.PatientAddresss.Add(newPatientAddress);
                 await _context.SaveChangesAsync();
-                return _uriService.GetPatientUri(newPatient.Id.ToString()).ToString();
+                return _uriService.GetPatientAddressUri(newPatientAddress.Id.ToString()).ToString();
             }
             catch (Exception ex)
             {
@@ -172,24 +173,90 @@ namespace patient_api.Services
             }
         }
 
-        public async Task<bool> UpdatePatientAddress(Address_dto address)
+        public async Task<bool> UpdatePatientAddress(Address_dto address_dto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var Address = await _context.PatientAddresss.FindAsync(Guid.Parse(address_dto.Id));
+                Address = _mapper.Map<Address>(address_dto);
+                Address.LastUpdate = DateTime.Now;
+                var dbresponse = await _context.SaveChangesAsync();
+                return dbresponse == 1;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
         }
 
         public async Task<bool> DeletePatientAddress(string Id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var Address = await _context.PatientAddresss.FindAsync(Guid.Parse(Id));
+                _context.PatientAddresss.Remove(Address);
+                var result = _context.SaveChanges();
+                return result == 1;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
         }
 
-        public async Task<Patient_dto> GetPatientAddress(string Id)
+        public async Task<Address_dto> GetPatientAddress(string Id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var Address = await _context.PatientAddresss.FindAsync(Guid.Parse(Id));
+                if (Address != null)
+                {
+                    return _mapper.Map<Address_dto>(Address);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
         }
 
-        public async Task<AddressPagedResponse> GetPatientAddresses(PaginationQuery paginationQuery = null)
+        public async Task<AddressPagedResponse> GetPatientAddresses(string PatientId, PaginationQuery paging = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<Address> addressList = new List<Address>();
+                AddressPagedResponse addressResponse = new AddressPagedResponse();
+                addressResponse.TotalRecords = _context.Patients.Count();
+                addressResponse.TotalPages = (int)Math.Ceiling((decimal)addressResponse.TotalRecords / (decimal)paging.PageSize);
+                addressResponse.PageNumber = paging.PageNumber >= 1 ? paging.PageNumber : (int?)null;
+                addressResponse.PageSize = paging.PageSize >= 1 ? paging.PageSize : (int?)null;
+
+                if (addressResponse.TotalRecords > 0)
+                {
+                    var skip = (paging.PageNumber - 1) * paging.PageSize;
+                    addressList = await _context.PatientAddresss.Skip(skip).Take(paging.PageSize).ToListAsync();
+
+                    addressResponse.Data = _mapper.Map<List<Address_dto>>(addressList);
+                    addressResponse.PreviousPage = paging.PageNumber - 1 >= 1 ? _uriService.GetPatientAddressPagedUri(PatientId,  new PaginationQuery(paging.PageNumber - 1, paging.PageSize)).ToString() : null;
+                    if (addressResponse.PageNumber < addressResponse.TotalPages)
+                    {
+                        addressResponse.NextPage = paging.PageNumber >= 1 ? _uriService.GetPatientAddressPagedUri(PatientId, new PaginationQuery(paging.PageNumber + 1, paging.PageSize)).ToString() : null;
+                    }
+                }
+                return addressResponse;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
         }
     }
 }
