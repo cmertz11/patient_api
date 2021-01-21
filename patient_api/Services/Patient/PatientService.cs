@@ -123,37 +123,7 @@ namespace patient_api.Services
                 throw;
             }
         }
-        public async Task<bool> SeedPatientData()
-        {
-            try
-            {
-                 var testPatientData = new Faker<Patient>() 
-                    .RuleFor(c => c.MedicalRecordNumber, f => f.Finance.RoutingNumber().ToString())
-                    .RuleFor(c => c.FirstName, f => f.Name.FirstName())
-                    .RuleFor(c => c.LastName, f => f.Name.LastName())
-                    .RuleFor(c => c.MI, f => f.Name.FindName().Substring(0, 1))
-                    .RuleFor(c => c.DOB, f => f.Person.DateOfBirth)
-                    .RuleFor(c => c.email, f => f.Person.Email)
-                    .RuleFor(c => c.Sex, f => f.Random.Number(1, 2))
-                    .RuleFor(c => c.Race, f => f.Random.Number(1, 6));
 
-                  var testRecords = testPatientData.GenerateBetween(1000, 1000);
-
-                  foreach (var item in testRecords)
-                  {
-                    item.LastUpdate = DateTime.Now;
-                    _context.Patients.Add(item);
-                  }
-
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw;
-            }
-        }
 
         public async Task<string> AddPatientAddress(Address_dto address)
         {
@@ -258,5 +228,56 @@ namespace patient_api.Services
                 throw;
             }
         }
+    
+        public async Task<bool> SeedPatientData()
+        {
+            Random rnd = new Random();
+            try
+            {
+                 var testPatientData = new Faker<Patient>() 
+                    .RuleFor(c => c.MedicalRecordNumber, f => f.Finance.RoutingNumber().ToString())
+                    .RuleFor(c => c.FirstName, f => f.Name.FirstName())
+                    .RuleFor(c => c.LastName, f => f.Name.LastName())
+                    .RuleFor(c => c.MI, f => f.Name.FindName().Substring(0, 1))
+                    .RuleFor(c => c.DOB, f => f.Person.DateOfBirth)
+                    .RuleFor(c => c.email, f => f.Person.Email)
+                    .RuleFor(c => c.Sex, f => f.Random.Number(1, 2))
+                    .RuleFor(c => c.Race, f => f.Random.Number(1, 6));
+
+                  var testPatientRecords = testPatientData.GenerateBetween(1000, 1000);
+
+                  foreach (var testPatient in testPatientRecords)
+                  {
+                    
+                    
+                    testPatient.LastUpdate = DateTime.Now;
+                    _context.Patients.Add(testPatient);
+
+                    var testAddressData = new Faker<Address>()
+                        .RuleFor(r => r.Street1, r => r.Address.StreetAddress())
+                        .RuleFor(r => r.Street2, r => r.Address.SecondaryAddress())
+                        .RuleFor(r => r.City, r => r.Address.City())
+                        .RuleFor(r => r.State, r => r.Address.State())
+                        .RuleFor(r => r.Zip, r => r.Address.ZipCode());
+
+                    var testAddressRecords = testAddressData.GenerateBetween(1, 5);
+                    foreach (var address in testAddressRecords)
+                    {
+                        address.PatientId = testPatient.Id;
+                        address.LastUpdate = DateTime.Now;
+                        _context.PatientAddresss.Add(address);
+                    }
+                  }
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+    
     }
 }
