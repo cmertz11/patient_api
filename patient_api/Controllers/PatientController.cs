@@ -118,22 +118,22 @@ namespace patient_api.Controllers
         }
 
       
-        [HttpGet]
-        [ActionName("SeedTestPatients")]
-        public async Task<IActionResult> SeedTestPatients()
-        {
-            try
-            {
-                await _pateintService.SeedPatientData();
+        //[HttpGet]
+        //[ActionName("SeedTestPatients")]
+        //public async Task<IActionResult> SeedTestPatients()
+        //{
+        //    try
+        //    {
+        //        await _pateintService.SeedPatientData();
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500);
-            }
-        }
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        return StatusCode(500);
+        //    }
+        //}
 
 
     }     
